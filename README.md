@@ -1,6 +1,6 @@
 # SupertrendATR DP LONG
 
-Skrypt rozszerza możliwości klasycznego wskaźnika Supertrend, wprowadzając autorską korektę opartą o zmienność (ATR) oraz analizę wielointerwałową (Multi-Timeframe - MTF). Skrypt został zaprojektowany z myślą o wychwytywaniu i prowadzaniu pozycji wzrostowych (Long).
+Skrypt rozszerza możliwości klasycznego wskaźnika Supertrend, wprowadzając autorską korektę opartą o zmienność (ATR) oraz analizę wielointerwałową (Multi-Timeframe - MTF). Skrypt został zaprojektowany z myślą o wychwytywaniu i prowadzaniu pozycji wzrostowych (Long) na indeksach.
 
 ---
 
@@ -11,7 +11,8 @@ Skrypt rozszerza możliwości klasycznego wskaźnika Supertrend, wprowadzając a
 * **Wizualizacja trendu:** Dynamiczne wypełnienie tła (chmury) pomiędzy ceną a skorygowanymi liniami trendu, ułatwiające szybką identyfikację sentymentu.
 * **Powiadomienia na wykresie:** Etykiety ze strzałkami wskazujące dokładne momenty odwrócenia trendu.
 
----
+---<img width="1096" height="917" alt="image" src="https://github.com/user-attachments/assets/5f3c2dc4-dd67-4cac-8481-b222e1f706ff" />
+
 
 ## ⚙️ Logika strategii
 
