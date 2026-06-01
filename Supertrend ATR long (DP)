@@ -1,0 +1,70 @@
+//@version=5
+strategy("SupertrendATR DP LONG", overlay=true)
+
+// Parameters for the first Supertrend
+factor = input(10.0, title="Factor")
+atrPeriod = input(144, title="ATR Period")
+atrPeriod1 = input(144, title="ATR ST")
+sourcelong = input.source(close)
+sourceexit = input.source(close)
+
+// Parameters for the second Supertrend
+factor2 = input(10.0, title="Factor 2", inline="2nd ST")
+atrPeriod2 = input(144, title="ATR Period 2", inline="2nd ST")
+timeframe2 = input.timeframe("", title="Timeframe 2", inline="2nd ST")
+
+// Define colors
+green = input.color(#07c951, "Bullish Color", group = "Appearance")
+red = input.color(color.rgb(161, 15, 4), "Bearish Color", group = "Appearance")
+purple = color.new(color.purple, 0)
+orange = color.new(color.orange, 0)
+teal = color.new(color.teal, 0)
+
+// Function to calculate Supertrend with ATR modification
+supertrendWithATR(factor, atrPeriod) =>
+    atr = ta.atr(atrPeriod1)
+    [supertrendLine, direction] = ta.supertrend(factor, atrPeriod)
+    adjustedSupertrendLine = direction > 0 ? supertrendLine + atr : supertrendLine - atr
+    [supertrendLine, adjustedSupertrendLine, direction]
+
+// Calculate the first Supertrend
+[supertrendLine, adjustedSupertrendLine, direction] = supertrendWithATR(factor, atrPeriod)
+
+// Calculate the second Supertrend with a different timeframe
+[supertrendLine2, adjustedSupertrendLine2, direction2] = request.security(syminfo.tickerid, timeframe2, supertrendWithATR(factor2, atrPeriod2))
+
+// Plot the first Supertrend on the chart
+plot(supertrendLine, color=color.new(color.blue, 0), linewidth=2, title="Original Supertrend")
+plot(adjustedSupertrendLine, color=direction > 0 ? color.new(red, 0) : color.new(green, 0), linewidth=3, title="Adjusted Supertrend")
+
+// Plot the second Supertrend on the chart
+plot(supertrendLine2, color=purple, linewidth=2, title="Original Supertrend 2")
+plot(adjustedSupertrendLine2, color=direction2 > 0 ? orange : teal, linewidth=3, title="Adjusted Supertrend 2")
+
+// Fill the area between the adjusted Supertrend line and the price for the first Supertrend
+fill(plot1=plot(adjustedSupertrendLine, color=color.new(red, 100)), 
+     plot2=plot(close, color=color.new(green, 100)), 
+     color=direction > 0 ? color.new(red, 90) : color.new(green, 90))
+
+// Fill the area between the adjusted Supertrend line and the price for the second Supertrend with gradient
+fill(plot1=plot(adjustedSupertrendLine2, color=color.new(orange, 100)), 
+     plot2=plot(close, color=color.new(teal, 100)), 
+     color=direction2 > 0 ? color.new(orange, 90) : color.new(teal, 90))
+
+// Strategy logic
+
+longst=ta.crossunder(direction2, 0) ? adjustedSupertrendLine2 : na
+shortst=ta.crossover(direction2, 0) ? adjustedSupertrendLine2 : na
+longCondition = ta.crossover(sourcelong, supertrendLine)
+shortCondition = ta.crossunder(sourceexit, adjustedSupertrendLine)
+
+if longCondition
+    strategy.entry("Long", strategy.long)
+    
+if shortCondition
+    strategy.close("Long", "long exit")
+
+
+// Plot shapes for trend changes
+plotshape(ta.crossunder(direction, 0) ? adjustedSupertrendLine : na, "Bullish Trend", shape.labelup, location.absolute, green, text = "▲", textcolor = chart.fg_color, size = size.small)
+plotshape(ta.crossover(direction, 0) ? adjustedSupertrendLine : na, "Bearish Trend", shape.labeldown, location.absolute, red, text = "▼", textcolor = chart.fg_color, size = size.small)
